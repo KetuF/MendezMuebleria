@@ -1,30 +1,28 @@
 const express = require('express');
 const router = express.Router();
-const connection = require('../db');
+const pool = require('../db'); // Ahora usamos un pool de conexiones
 
-// Ruta para obtener los productos
-router.get('/', (req, res) => {
-    const query = 'SELECT * FROM productos';
-    connection.query(query, (err, results) => {
-      if (err) {
+// Ruta para obtener todos los productos
+router.get('/', async (req, res) => {
+    try {
+        const [results] = await pool.promise().query('SELECT * FROM productos');
+        res.json(results);
+    } catch (err) {
         console.error('Error en la consulta:', err.message);
-        return res.status(500).send('Error al obtener productos.');
-      }
-      res.json(results);
-    });
+        res.status(500).send('Error al obtener productos.');
+    }
 });
 
-// Ruta para obtener los productos por tipo
-router.get('/:tipo', (req, res) => {
-  const { tipo } = req.params;
-  const query = 'SELECT * FROM productos WHERE tipo = ? ';
-  connection.query(query,  [tipo], (err, results) => {
-    if (err) {
-      console.error('Error en la consulta:', err.message);
-      return res.status(500).send('Error al obtener productos.');
+// Ruta para obtener productos por tipo
+router.get('/:tipo', async (req, res) => {
+    try {
+        const { tipo } = req.params;
+        const [results] = await pool.promise().query('SELECT * FROM productos WHERE tipo = ?', [tipo]);
+        res.json(results);
+    } catch (err) {
+        console.error('Error en la consulta:', err.message);
+        res.status(500).send('Error al obtener productos.');
     }
-    res.json(results);
-  });
 });
 
 module.exports = router;
