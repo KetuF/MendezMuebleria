@@ -20,5 +20,6 @@ app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
 
-app.use('/api/productos', userRoutes);
+// Cambio aca
 app.use('/api/compra', compraRoutes);
+app.use('/api/productos', userRoutes);
